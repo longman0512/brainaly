@@ -1,5 +1,4 @@
 const express = require("express");
-const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const path = require("path");
 const { getHeapCodeStatistics } = require("v8");
@@ -8,9 +7,9 @@ const app = express();
 const PORT = 3001;
 var cors = require('cors');
 app.use(cors())
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, "public")));
+app.use(express.json({limit: '50mb', extended: true }));
+app.use(express.urlencoded({limit: '50mb', extended: true,  parameterLimit:50000}));
 app.use('/upload', express.static('upload'));  
 app.use(cookieParser());
 app.use((req, res, next) => {
