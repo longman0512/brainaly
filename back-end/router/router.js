@@ -9,16 +9,16 @@ const nodemailer = require('nodemailer');
 const stripe = require("stripe")("sk_test_51IPvrnIAaIJ9dA25lOk4dDB0RRLvkDYb1LF9pITxtcl67oiVpoHA3tycYgnUn01SDHmg8VAIzhOUaDfxV7JpMN4X00Odeh68UU");
 const mysql = require('mysql');
 
-const host = 'localhost';
-const user = 'root';
-const password = '';
-const database = 'brainaly';
+//cconst host = 'localhost';
+///  const user = 'root';
+// const password = '';
+// const database = 'brainaly';
 
 // server invironment
-// const host = 'localhost';
-// const user = 'admin';
-// const password = 'ABCabc!@12';
-// const database = 'brainaly';
+const host = 'localhost';
+const user = 'admin';
+const password = 'ABCabc!@12';
+const database = 'brainaly';
 
 var saltRounds = 10;
 var limitNum = 5;
