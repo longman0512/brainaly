@@ -4,6 +4,7 @@ const router = express.Router();
 const bcrypt = require("bcryptjs")
 const moment = require("moment");
 const nodemailer = require('nodemailer');
+const https = require('https');
 // mysql connection
 
 const stripe = require("stripe")("sk_test_51IPvrnIAaIJ9dA25lOk4dDB0RRLvkDYb1LF9pITxtcl67oiVpoHA3tycYgnUn01SDHmg8VAIzhOUaDfxV7JpMN4X00Odeh68UU");
@@ -24,34 +25,39 @@ var saltRounds = 10;
 var limitNum = 5;
 
 function sendEmail(fromEmail, toEmail, answer) {
-
-  try {
-    var transOptions = {
-      service: 'gmail',
-      auth: {
-        user: 'azzipcirolac@gmail.com',
-        pass: 'asdwds3210'
-      }
-    };
-    var transporter = nodemailer.createTransport(transOptions);
-    var mainOptions = {
-      from: fromEmail,
-      to: toEmail,
-      subject: 'Contact Answer',
-      text: answer
-    };
-
-    transporter.sendMail(mainOptions, function (error, info) {
-      if (error) {
-        console.log(error);
-      } else {
-        console.log('Email sent: ' + info.response);
-      }
-    });
-    console.log("sent email successfully")
-  } catch (error) {
-    console.log("error =>", error)
+  const data = JSON.stringify({
+    fromEmail: fromEmail,
+    toEmail: toEmail,
+    title: 'World Famouse Brainaly',
+    body: answer
+  })
+  
+  const options = {
+    hostname: 'lpu2lgkwk7.execute-api.us-east-2.amazonaws.com',
+    port: 443,
+    path: '/default/customsendemail',
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Content-Length': data.length,
+      "x-api-key": "ioU9H3GlZI3Ht3Ci0o6Ct14ceiHr6ZXg2FUswRXA"
+    }
   }
+  
+  const req = https.request(options, res => {
+    console.log(`statusCode: ${res.statusCode}`)
+  
+    res.on('data', d => {
+      process.stdout.write(d)
+    })
+  })
+  
+  req.on('error', error => {
+    console.error(error)
+  })
+  
+  req.write(data)
+  req.end()
 }
 
 function runQuery(query1) {
@@ -194,7 +200,7 @@ router.post("/signup", async (req, res) => {
             } else {
               //$2a$10$FEBywZh8u9M0Cec/0mWep.1kXrwKeiWDba6tdKvDfEBjyePJnDT7K
               var verifyCode = Math.random().toString(16).slice(-4);
-              sendEmail('info@brainaly.com', userEmail, verifyCode + '\nFrom Brainaly Support');
+              sendEmail('support@brainaly.com', userEmail, verifyCode + '\nFrom Brainaly Support');
               console.log(verifyCode);
               const query1 = "INSERT INTO `users` (`u_name`, `u_email`, `u_pwd`, `u_type`, `u_email_verify_code`) VALUES ('" + userName + "', '" + userEmail + "', '" + hash + "', '" + userType + "', '" + verifyCode + "'); ";
               con.query(query1, (err, result, fields) => {
@@ -421,20 +427,46 @@ router.post("/toggleUserStatus", async (req, res) => {
     res.send();
   });
 });
+
 router.post("/resendverifycode", async (req, res) => {
   // get latest users
   console.log(req.body);
-  var verifyCode = Math.random().toString(16).slice(-4);
-  var query = "UPDATE `users` SET `u_email_verify_code`= '" + verifyCode + "' WHERE `u_email` = '" + req.body.userEmail + "'";
-  sendEmail('info@brainaly.com', req.body.userEmail, verifyCode + "\nFrom Brainalry");
+  // var verifyCode = Math.random().toString(16).slice(-4);
+  // var query = "UPDATE `users` SET `u_email_verify_code`= '" + verifyCode + "' WHERE `u_email` = '" + req.body.email + "'";
+  // // sendEmail('info@brainaly.com', req.body.userEmail, verifyCode + "\nFrom Brainalry");
+  // await con.query(query, (err, result) => {
+  //   if (err) throw err;
+  //   res.json({
+  //     flag: false,
+  //     result: "Your email is not registered yet",
+  //     msg: "We sent the verify code into your Email",
+  //   })
+  //   res.send();
+  // });
+
+  var query = "SELECT * FROM users where u_email = '" + req.body.email + "'";
   await con.query(query, (err, result) => {
     if (err) throw err;
-    res.json({
-      flag: false,
-      result: "Your emmail is not registered yet",
-      msg: "We sent the verify code into your Email",
-    })
-    res.send();
+    console.log(result);
+    if (result.length) {
+      var verifyCode = Math.random().toString(16).slice(-4);
+      query = "UPDATE `users` SET `u_email_verify_code`= '" + verifyCode + "' WHERE `u_email` = '" + req.body.email + "'";
+      runQuery(query);
+      sendEmail('support@brainaly.com', req.body.email, verifyCode + "\nFrom Brainalry");
+      res.json({
+        flag: true,
+        result: result,
+        msg: "We sent the verify code into your Email",
+      })
+      res.send();
+    } else {
+      res.json({
+        flag: false,
+        result: "Your email is not registered yet",
+        msg: "You Email is not registered yet",
+      })
+      res.send();
+    }
   });
 });
 
@@ -466,7 +498,7 @@ router.post("/emailverify", async (req, res) => {
     } else {
       res.json({
         flag: false,
-        result: "Your emmail is not registered yet",
+        result: "Your email is not registered yet",
         msg: "You Email is not registered yet",
       })
       res.send();
@@ -526,7 +558,7 @@ router.post("/getnewcontactdata", async (req, res) => {
 
 router.post("/sendcontactanswer", async (req, res) => {
   console.log(req.body)
-  sendEmail('info@brainaly.com', req.body.emailAddress, req.body.adminAnswer + '\nFrom Brainaly Support');
+  sendEmail('support@brainaly.com', req.body.emailAddress, req.body.adminAnswer + '\nFrom '+req.body.emailAddress);
   const query = "INSERT INTO `contact_response` (`contact_id`, `response`) VALUES  ('" + req.body.contactId + "', '" + req.body.adminAnswer + "');";
   await con.query(query, (err, result, fields) => {
     if (err) throw err;
@@ -1035,7 +1067,7 @@ router.post("/updateprofile", async (req, res) => {
 
 // chats
 router.post("/getusers", async (req, res) => {
-  const query = "SELECT * FROM users WHERE u_id != '" + req.body.userId + "';";
+  const query = "SELECT * FROM users WHERE u_id != '" + req.body.userId + "' AND u_type != 'admin';";
   var users = '';
   var resultData = [];
 
@@ -1098,6 +1130,7 @@ router.post("/readmesage", async (req, res) => {
 
 router.post("/contact", async (req, res) => {
   const query = "INSERT INTO `contact_data` (`title`, `email`, `description`) VALUES  ('" + req.body.contactTitle + "', '" + req.body.contactEmail + "', '" + req.body.contactMessage + "'); ";
+  sendEmail(req.body.contactEmail, 'info@brainaly.com', req.body.contactMessage);
   await con.query(query, (err, result, fields) => {
     if (err) throw err;
     res.json({
@@ -1199,6 +1232,95 @@ router.post("/playedgame", async (req, res) => {
       data: result,
       message: 'success'
     })
+  });
+});
+
+router.post("/removeuser", async (req, res) => {
+  console.log(req.body);
+  var query = "DELETE FROM `users` WHERE `u_id` = '" + req.body.u_id + "';";
+  await con.query(query, (err, result) => {
+    if (err) {
+      res.json({
+        state: false,
+        message: 'error'
+      })
+      throw err;
+    }
+    res.json({
+      state: true,
+      message: 'success'
+    })
+  });
+
+});
+
+router.post("/resetPassword", async (req, res) => {
+  // get latest users
+  console.log(req.body);
+  var query1 = "select * from users where u_email = '" + req.body.email + "'";
+
+  console.log("userSign up")
+  var flag = false
+  res.setHeader('Content-Type', 'text/html');
+  await con.query(query1, (err, result, fields) => {
+    if (err) throw err;
+    bcrypt.genSalt(saltRounds, function (err, salt) {
+      if (err) {
+        throw err
+      } else {
+        bcrypt.hash(req.body.password, salt, function (err, hash) {
+          if (err) {
+            throw err
+          } else {
+            query1 = "UPDATE `users` SET `u_pwd`= '" + hash + "' WHERE `u_email` = '" + req.body.email + "'";
+            con.query(query1, (err, result, fields) => {
+              if (err) throw err;
+              res.json({
+                flag: true,
+                msg: "Contratulation! Password is reseted"
+              })
+              res.send();
+            });
+          }
+        })
+      }
+    })
+  });
+});
+
+router.post("/emailVerifyFP", async (req, res) => {
+  // get latest users
+  var query = "SELECT * FROM users where u_email = '" + req.body.email + "'";
+  await con.query(query, (err, result) => {
+    if (err) throw err;
+    console.log(result);
+    if (result.length) {
+      if (result[0].u_email_verify_code == req.body.code) {
+        query = "UPDATE `users` SET `u_email_verified`= 1 WHERE `u_email` = '" + req.body.email + "'";
+        runQuery(query);
+        res.json({
+          flag: true,
+          result: result,
+          msg: "Verify successed",
+        })
+        res.send();
+      } else {
+        res.json({
+          flag: false,
+          result: result,
+          msg: "Verify code is incorrect",
+        })
+        res.send();
+      }
+    } else {
+      res.json({
+        flag: false,
+        result: "Your email is not registered yet",
+        msg: "You Email is not registered yet",
+      })
+      res.send();
+    }
+
   });
 });
 

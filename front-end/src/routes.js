@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/rules-of-hooks */
 import React from 'react';
 import { Navigate } from 'react-router-dom';
 import DashboardLayout from 'src/layouts/DashboardLayout';
@@ -19,6 +18,7 @@ import NewQuiz from 'src/views/product/ProductListView/newQuiz';
 import Collections from 'src/views/collection';
 import GamePanel from 'src/views/game';
 import VerifyForm from 'src/views/auth/VerifyForm';
+import ForgotPwdView from 'src/views/auth/ForgotPwd';
 import ClassView from 'src/views/classes';
 import EditCollection from 'src/views/collection/edit';
 import EditClass from 'src/views/classes/edit';
@@ -65,6 +65,7 @@ const routes = [
     children: [
       { path: 'home', element: <HomeView /> },
       { path: 'signup', element: <RegisterView /> },
+      { path: 'forgot', element: <ForgotPwdView /> },
       { path: 'signin', element: <LoginView /> },
       { path: 'contact', element: <ContactForm /> },
       { path: 'verifyemail', element: <VerifyForm /> },

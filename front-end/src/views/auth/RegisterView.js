@@ -273,6 +273,18 @@ const RegisterView = () => {
                       Verify
                     </Link>
                   </Typography>
+                  <Typography
+                    color="textSecondary"
+                    variant="body1"
+                  >
+                    <Link
+                      component={RouterLink}
+                      to="/forgot"
+                      variant="h6"
+                    >
+                      Forgot Password?
+                    </Link>
+                  </Typography>
                 </form>
               )}
             </Formik>

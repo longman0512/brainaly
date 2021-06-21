@@ -16,6 +16,14 @@ const useStyles = makeStyles((theme) => ({
   },
   exportButton: {
     marginRight: theme.spacing(1)
+  },
+  header: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between'
+  },
+  searchBar: {
+    maxWidth: 300
   }
 }));
 
@@ -29,11 +37,11 @@ const Toolbar = ({ className, ...rest }) => {
     >
       <Box mt={3}>
         <Card>
-          <CardContent>
+          <CardContent className={classes.header}>
             <Box maxWidth={500}>
               <Typography
                 color="textPrimary"
-                variant="h3"
+                variant="h5"
               >
                 Transaction History
               </Typography>

@@ -487,3 +487,43 @@ export async function playedGame(data) {
   });
   return DATA;
 }
+
+export async function removeUserApi(data) {
+  const DATA = await Axios.post('removeuser', data).then((res) => {
+    if (res.status === 200) {
+      return res.data;
+    }
+    return res.data;
+  });
+  return DATA;
+}
+
+export async function resetPassword(data) {
+  const DATA = await Axios.post('resetPassword', data).then((res) => {
+    if (res.status === 200) {
+      return res.data;
+    }
+    return res.data;
+  });
+  return DATA;
+}
+
+export async function sendVcode(data) {
+  const DATA = await Axios.post('sendVcode', data).then((res) => {
+    if (res.status === 200) {
+      return res.data;
+    }
+    return res.data;
+  });
+  return DATA;
+}
+
+export async function emailVerifyFP(data) {
+  const DATA = await Axios.post('emailVerifyFP', data).then((res) => {
+    if (res.status === 200) {
+      return res.data;
+    }
+    return res.data;
+  });
+  return DATA;
+}

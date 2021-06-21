@@ -11,6 +11,7 @@ import StoreContext from 'src/context/index';
 import ImageSearchIcon from '@material-ui/icons/ImageSearch';
 import { useNavigate } from 'react-router-dom';
 import CancelIcon from '@material-ui/icons/Cancel';
+import Dropzone from 'react-dropzone';
 import {
   makeStyles,
   TextField,
@@ -224,14 +225,14 @@ export default function NewQuiz() {
     document.getElementById('image_select').click();
   };
   async function handleImageChange(e) {
-    if (e.target.files[0]) {
-      console.log(e.target.files[0]);
-      e.preventDefault();
-      const reader = URL.createObjectURL(e.target.files[0]);
+    console.log('handleImageChange', e);
+    if (e[0]) {
+      console.log(e[0]);
+      const reader = URL.createObjectURL(e[0]);
       setImageSource(reader);
       setImageSection('showImageSection');
       setImageLetter('hideImageSection');
-      await imageUpload(e.target.files[0]).then((res) => {
+      await imageUpload(e[0]).then((res) => {
         const preStore = store;
         const selIndex = preStore.selectedNav[0].id;
         const newProv = [...preStore.items];
@@ -279,13 +280,21 @@ export default function NewQuiz() {
       />
       <div className={classes.cart}>
         <div className={classes[imageLetter]}>
-          <div className={classes.previews} onClick={imageSelect}>
-            <input type="file" id="image_select" onChange={handleImageChange} className={classes.fileModal} />
-            <ImageSearchIcon fontSize="large" />
-            <Typography variant="body1" color="primary" component="h2" style={{ textAlign: 'center' }}>
-              Drag and Drop Event image here
-            </Typography>
-          </div>
+          <Dropzone onDrop={(acceptedFiles) => handleImageChange(acceptedFiles)}>
+            {({ getRootProps, getInputProps }) => (
+              <div className={classes.previews} {...getRootProps()}>
+                <ImageSearchIcon fontSize="large" />
+                <section>
+                  <div>
+                    <input {...getInputProps()} type="file" id="image_select" className={classes.fileModal} />
+                    <Typography variant="body1" color="primary" component="h2" style={{ textAlign: 'center' }}>
+                      Drag and Drop Event image here
+                    </Typography>
+                  </div>
+                </section>
+              </div>
+            )}
+          </Dropzone>
         </div>
         <div className={classes[imageSection]}>
           <img src={imageSource} alt="Image" className={classes.image} onClick={imageSelect} />

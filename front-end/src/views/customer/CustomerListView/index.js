@@ -21,6 +21,7 @@ const useStyles = makeStyles((theme) => ({
 const CustomerListView = () => {
   const classes = useStyles();
   const [users, setUsers] = useState([]);
+  const [schQuery, setSchQuery] = useState('');
   React.useEffect(() => {
     const userInfo = JSON.parse(localStorage.getItem('brainaly_user'));
     if (!userInfo || userInfo.userType !== 'admin') {
@@ -44,15 +45,30 @@ const CustomerListView = () => {
       console.log(err);
     });
   };
+  const updateUserData = () => {
+    getUserData().then((res) => {
+      console.log(res, setUsers, 'userResult');
+      setUsers([...res.result]);
+    }).catch((err) => {
+      console.log(err);
+    });
+  };
   return (
     <Page
       className={classes.root}
       title="Customers"
     >
       <Container maxWidth={false}>
-        <Toolbar />
+        <Toolbar
+          setSearchQuery={setSchQuery}
+        />
         <Box mt={3}>
-          <Results customers={users} updateStatus={toggleUserState} />
+          <Results
+            updateD={updateUserData}
+            customers={users}
+            updateStatus={toggleUserState}
+            query={schQuery}
+          />
         </Box>
       </Container>
     </Page>

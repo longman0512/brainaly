@@ -179,7 +179,7 @@ const NavBar = ({ onMobileClose, openMobile, items }) => {
           ))}
         </List>
       </Box>
-      <Button color="primary" variant="contained" onClick={addNewQuiz} className={classes.addButton}>Add Quiz</Button>
+      <Button color="primary" variant="contained" onClick={addNewQuiz} className={classes.addButton}>Add Questin</Button>
     </Box>
   );
 

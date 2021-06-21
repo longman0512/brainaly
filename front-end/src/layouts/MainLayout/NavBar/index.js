@@ -8,6 +8,7 @@ import {
   Hidden,
   List,
   Typography,
+  Button,
   makeStyles
 } from '@material-ui/core';
 import {
@@ -17,6 +18,7 @@ import {
   User as UserIcon,
   Home as HomeIcon
 } from 'react-feather';
+import global from 'src/utils/global';
 import NavItem from './NavItem';
 import Logo from '../../../components/Logo';
 
@@ -70,6 +72,11 @@ const useStyles = makeStyles(() => ({
   }
 }));
 
+const gotoPlay = () => {
+  localStorage.removeItem('brainaly_game');
+  window.open(global.gamePageUrl, '_black');
+};
+
 const NavBar = ({ onMobileClose, openMobile }) => {
   const classes = useStyles();
   const location = useLocation();
@@ -120,6 +127,14 @@ const NavBar = ({ onMobileClose, openMobile }) => {
             />
           ))}
         </List>
+        <Button
+          color="primary"
+          onClick={gotoPlay}
+          size="large"
+          variant="contained"
+        >
+          Play
+        </Button>
       </Box>
     </Box>
   );

@@ -26,11 +26,11 @@ const TrafficByDevice = ({
 }) => {
   const classes = useStyles();
   const theme = useTheme();
-  const total = (studentsNum + teachersNum) / 100;
+  const total = Number((studentsNum + teachersNum) / 100).toFixed(2);
   const data = {
     datasets: [
       {
-        data: [teachersNum / total, studentsNum / total],
+        data: [Number(teachersNum / total).toFixed(2), Number(studentsNum / total).toFixed(2)],
         backgroundColor: [
           colors.indigo[500],
           colors.red[600]
@@ -67,13 +67,13 @@ const TrafficByDevice = ({
   const devices = [
     {
       title: 'Teachers',
-      value: teachersNum / total,
+      value: Number((teachersNum / total) || 0).toFixed(2),
       icon: GroupIcon,
       color: colors.indigo[500]
     },
     {
       title: 'Students',
-      value: studentsNum / total,
+      value: Number((studentsNum / total) || 0).toFixed(2),
       icon: GroupIcon,
       color: colors.red[600]
     }

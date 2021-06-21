@@ -152,7 +152,8 @@ const Results = ({
                     {transaction.t_description}
                   </TableCell>
                   <TableCell>
-                    {transaction.t_amount}
+                    $
+                    {Number(transaction.t_amount / 100).toFixed(2)}
                   </TableCell>
                   <TableCell>
                     {moment(transaction.t_created_at).format('DD/MM/YYYY')}
